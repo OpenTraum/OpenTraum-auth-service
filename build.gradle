@@ -42,6 +42,9 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
+    // Swagger / SpringDoc (WebFlux)
+    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.9'
+
     // Actuator + Prometheus
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'

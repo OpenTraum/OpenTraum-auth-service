@@ -1,6 +1,7 @@
 package com.opentraum.auth.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -20,11 +21,8 @@ public class JwtProvider {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.access-token-expiration}")
-    private long accessTokenExpiration;
-
-    @Value("${jwt.refresh-token-expiration}")
-    private long refreshTokenExpiration;
+    @Value("${jwt.expiration}")
+    private long expirationMs;
 
     private SecretKey key;
 
@@ -34,15 +32,15 @@ public class JwtProvider {
     }
 
     /**
-     * Access Token 생성
+     * JWT 토큰 생성
      */
-    public String generateAccessToken(Long userId, String tenantId, String role) {
+    public String createToken(Long userId, String email, String role) {
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + accessTokenExpiration);
+        Date expiry = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
-                .subject(String.valueOf(userId))
-                .claim("tenantId", tenantId)
+                .subject(userId.toString())
+                .claim("email", email)
                 .claim("role", role)
                 .issuedAt(now)
                 .expiration(expiry)
@@ -51,43 +49,26 @@ public class JwtProvider {
     }
 
     /**
-     * Refresh Token 생성
+     * 토큰 유효성 검증
      */
-    public String generateRefreshToken(Long userId, String tenantId) {
-        Date now = new Date();
-        Date expiry = new Date(now.getTime() + refreshTokenExpiration);
-
-        return Jwts.builder()
-                .subject(String.valueOf(userId))
-                .claim("tenantId", tenantId)
-                .issuedAt(now)
-                .expiration(expiry)
-                .signWith(key)
-                .compact();
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
+            return true;
+        } catch (ExpiredJwtException e) {
+            return false;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 
     /**
      * 토큰에서 Claims 추출
      */
     public Claims getClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(key)
-                .build()
+        return Jwts.parser().verifyWith(key).build()
                 .parseSignedClaims(token)
                 .getPayload();
-    }
-
-    /**
-     * 토큰 유효성 검증
-     */
-    public boolean validateToken(String token) {
-        try {
-            getClaims(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            log.warn("Invalid JWT token: {}", e.getMessage());
-            return false;
-        }
     }
 
     /**
@@ -98,25 +79,23 @@ public class JwtProvider {
     }
 
     /**
-     * 토큰에서 테넌트 ID 추출
+     * 토큰에서 역할(Role) 추출
      */
-    public String getTenantId(String token) {
-        return getClaims(token).get("tenantId", String.class);
+    public String getRole(String token) {
+        return getClaims(token).get("role", String.class);
     }
 
     /**
      * 토큰의 남은 유효 시간 (밀리초)
      */
     public long getRemainingExpiration(String token) {
-        Date expiration = getClaims(token).getExpiration();
-        return expiration.getTime() - System.currentTimeMillis();
-    }
-
-    public long getAccessTokenExpiration() {
-        return accessTokenExpiration;
-    }
-
-    public long getRefreshTokenExpiration() {
-        return refreshTokenExpiration;
+        try {
+            Claims claims = getClaims(token);
+            long expiration = claims.getExpiration().getTime();
+            long remaining = expiration - System.currentTimeMillis();
+            return Math.max(remaining, 0);
+        } catch (JwtException e) {
+            return 0;
+        }
     }
 }
