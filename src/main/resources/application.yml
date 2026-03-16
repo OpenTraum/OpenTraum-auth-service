@@ -23,8 +23,14 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET:opentraum-default-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256}
-  access-token-expiration: ${JWT_ACCESS_EXPIRATION:1800000}   # 30분 (밀리초)
-  refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800000} # 7일 (밀리초)
+  expiration: ${JWT_EXPIRATION:1800000}   # 30분 (밀리초)
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
 
 management:
   endpoints:
@@ -58,6 +64,10 @@ spring:
   sql:
     init:
       mode: never
+
+springdoc:
+  swagger-ui:
+    enabled: false
 
 logging:
   level:
