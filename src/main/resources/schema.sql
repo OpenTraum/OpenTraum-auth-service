@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
     password    VARCHAR(255)    NOT NULL,
     name        VARCHAR(100)    NOT NULL,
     phone       VARCHAR(20),
-    role        VARCHAR(20)     NOT NULL DEFAULT 'USER',
+    role        VARCHAR(20)     NOT NULL DEFAULT 'CONSUMER',
     created_at  TIMESTAMP       NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMP       NOT NULL DEFAULT NOW()
 );

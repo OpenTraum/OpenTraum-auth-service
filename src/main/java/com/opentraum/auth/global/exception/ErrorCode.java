@@ -17,7 +17,8 @@ public enum ErrorCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A002", "유효하지 않은 토큰입니다"),
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "A003", "토큰이 만료되었습니다"),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "A004", "이미 사용 중인 이메일입니다"),
-    RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "A005", "요청 한도를 초과했습니다");
+    RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "A005", "요청 한도를 초과했습니다"),
+    INVALID_ROLE(HttpStatus.BAD_REQUEST, "A006", "유효하지 않은 역할입니다 (CONSUMER 또는 ORGANIZER)");
 
     private final HttpStatus status;
     private final String code;

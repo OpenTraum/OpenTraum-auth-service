@@ -27,4 +27,8 @@ public class SignupRequest {
 
     @Schema(example = "010-1234-5678")
     private String phone;
+
+    @Schema(example = "CONSUMER", allowableValues = {"CONSUMER", "ORGANIZER"})
+    @NotBlank(message = "역할은 필수입니다")
+    private String role;
 }
