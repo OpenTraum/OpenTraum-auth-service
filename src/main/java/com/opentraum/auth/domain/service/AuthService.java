@@ -16,8 +16,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.text.Normalizer;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -48,12 +50,18 @@ public class AuthService {
                         return Mono.<AuthResponse>error(new BusinessException(ErrorCode.INVALID_ROLE));
                     }
 
+                    String tenantId = null;
+                    if (role == Role.ORGANIZER) {
+                        tenantId = generateSlug(request.getName());
+                    }
+
                     User user = User.builder()
                             .email(request.getEmail())
                             .password(passwordEncoder.encode(request.getPassword()))
                             .name(request.getName())
                             .phone(request.getPhone())
                             .role(role.name())
+                            .tenantId(tenantId)
                             .createdAt(LocalDateTime.now())
                             .updatedAt(LocalDateTime.now())
                             .build();
@@ -61,12 +69,13 @@ public class AuthService {
                     return userRepository.save(user)
                             .map(saved -> {
                                 String token = jwtProvider.createToken(
-                                        saved.getId(), saved.getEmail(), saved.getRole());
+                                        saved.getId(), saved.getEmail(), saved.getRole(), saved.getTenantId());
                                 return AuthResponse.builder()
                                         .userId(saved.getId())
                                         .email(saved.getEmail())
                                         .name(saved.getName())
                                         .role(saved.getRole())
+                                        .tenantId(saved.getTenantId())
                                         .token(token)
                                         .build();
                             });
@@ -88,12 +97,13 @@ public class AuthService {
                     }
 
                     String token = jwtProvider.createToken(
-                            user.getId(), user.getEmail(), user.getRole());
+                            user.getId(), user.getEmail(), user.getRole(), user.getTenantId());
                     return Mono.just(AuthResponse.builder()
                             .userId(user.getId())
                             .email(user.getEmail())
                             .name(user.getName())
                             .role(user.getRole())
+                            .tenantId(user.getTenantId())
                             .token(token)
                             .build());
                 });
@@ -103,6 +113,21 @@ public class AuthService {
      * 로그아웃
      * - 토큰 남은 만료시간만큼 Redis 블랙리스트에 등록
      */
+    private String generateSlug(String name) {
+        String normalized = Normalizer.normalize(name, Normalizer.Form.NFD)
+                .replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        String slug = normalized.toLowerCase()
+                .replaceAll("[^a-z0-9가-힣\\s-]", "")
+                .replaceAll("[\\s]+", "-")
+                .replaceAll("-+", "-")
+                .replaceAll("^-|-$", "");
+        if (slug.isEmpty()) {
+            slug = "org";
+        }
+        String suffix = UUID.randomUUID().toString().substring(0, 6);
+        return slug + "-" + suffix;
+    }
+
     public Mono<Void> logout(String token) {
         long remainingMs = jwtProvider.getRemainingExpiration(token);
         if (remainingMs <= 0) {
