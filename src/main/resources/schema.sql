@@ -6,12 +6,16 @@ CREATE TABLE IF NOT EXISTS users (
     name        VARCHAR(100)    NOT NULL,
     phone       VARCHAR(20),
     role        VARCHAR(20)     NOT NULL DEFAULT 'CONSUMER',
+    tenant_id   VARCHAR(64),
     created_at  TIMESTAMP       NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMP       NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_email
     ON users (email);
+
+CREATE INDEX IF NOT EXISTS idx_users_tenant_id
+    ON users (tenant_id);
 
 -- Refresh Token 테이블
 CREATE TABLE IF NOT EXISTS auth_refresh_tokens (

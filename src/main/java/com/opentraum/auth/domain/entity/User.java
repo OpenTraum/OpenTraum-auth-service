@@ -31,6 +31,8 @@ public class User {
 
     private String role;
 
+    private String tenantId;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

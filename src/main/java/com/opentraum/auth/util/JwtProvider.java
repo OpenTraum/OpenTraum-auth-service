@@ -34,14 +34,20 @@ public class JwtProvider {
     /**
      * JWT 토큰 생성
      */
-    public String createToken(Long userId, String email, String role) {
+    public String createToken(Long userId, String email, String role, String tenantId) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
 
-        return Jwts.builder()
+        var builder = Jwts.builder()
                 .subject(userId.toString())
                 .claim("email", email)
-                .claim("role", role)
+                .claim("role", role);
+
+        if (tenantId != null) {
+            builder.claim("tenantId", tenantId);
+        }
+
+        return builder
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(key)
@@ -83,6 +89,10 @@ public class JwtProvider {
      */
     public String getRole(String token) {
         return getClaims(token).get("role", String.class);
+    }
+
+    public String getTenantId(String token) {
+        return getClaims(token).get("tenantId", String.class);
     }
 
     /**
