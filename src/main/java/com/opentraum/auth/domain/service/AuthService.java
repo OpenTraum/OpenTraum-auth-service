@@ -41,12 +41,19 @@ public class AuthService {
                         return Mono.<AuthResponse>error(new BusinessException(ErrorCode.DUPLICATE_EMAIL));
                     }
 
+                    Role role;
+                    try {
+                        role = Role.valueOf(request.getRole());
+                    } catch (IllegalArgumentException e) {
+                        return Mono.<AuthResponse>error(new BusinessException(ErrorCode.INVALID_ROLE));
+                    }
+
                     User user = User.builder()
                             .email(request.getEmail())
                             .password(passwordEncoder.encode(request.getPassword()))
                             .name(request.getName())
                             .phone(request.getPhone())
-                            .role(Role.USER.name())
+                            .role(role.name())
                             .createdAt(LocalDateTime.now())
                             .updatedAt(LocalDateTime.now())
                             .build();
