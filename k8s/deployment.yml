@@ -25,7 +25,7 @@ spec:
         - name: harbor-secret
       containers:
         - name: auth-service
-          image: amdp-registry.skala-ai.com/skala26a-cloud/opentraum-auth-service:1f90c32fba4db5b1fbd47d8f179e945be3de6224
+          image: amdp-registry.skala-ai.com/skala26a-cloud/opentraum-auth-service:95185de59253be9bbcf5a0e1dfa08f6f980350f0
           ports:
             - containerPort: 8081
               protocol: TCP
