@@ -6,9 +6,9 @@ spring:
     name: opentraum-auth-service
 
   r2dbc:
-    url: r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:opentraum_auth}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: r2dbc:mariadb://${DB_HOST:opentraum-mariadb}:${DB_PORT:3306}/${DB_NAME:opentraum_auth}
+    username: ${DB_USERNAME:opentraum}
+    password: ${DB_PASSWORD:opentraum123!}
 
   data:
     redis:
@@ -57,7 +57,7 @@ spring:
       on-profile: prod
 
   r2dbc:
-    url: r2dbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    url: r2dbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_NAME}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
