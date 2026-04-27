@@ -25,7 +25,7 @@ spec:
       priorityClassName: opentraum-medium
       containers:
         - name: auth-service
-          image: amdp-registry.skala-ai.com/skala26a-cloud/opentraum-auth-service:latest
+          image: amdp-registry.skala-ai.com/skala26a-cloud/opentraum-auth-service:4aeeec9f496c31d4bd0d5e0448d755e8840a2f77
           imagePullPolicy: Always
           ports:
             - containerPort: 8081
