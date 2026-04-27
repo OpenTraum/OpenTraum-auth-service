@@ -8,7 +8,6 @@ metadata:
     app.kubernetes.io/part-of: opentraum
     app.kubernetes.io/component: auth
 spec:
-  revisionHistoryLimit: 2
   replicas: 1
   selector:
     matchLabels:
@@ -23,9 +22,11 @@ spec:
       terminationGracePeriodSeconds: 10
       imagePullSecrets:
         - name: harbor-secret
+      priorityClassName: opentraum-medium
       containers:
         - name: auth-service
-          image: amdp-registry.skala-ai.com/skala26a-cloud/opentraum-auth-service:a3fd2da4b594d3d403a76f8674faf8ae76b4e10b
+          image: amdp-registry.skala-ai.com/skala26a-cloud/opentraum-auth-service:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8081
               protocol: TCP
@@ -34,26 +35,28 @@ spec:
                 name: opentraum-config
           env:
             - name: DB_HOST
-              value: "opentraum-postgres"
+              value: "opentraum-mariadb.mariadb"
             - name: DB_PORT
-              value: "5432"
+              value: "3306"
             - name: DB_NAME
               value: "opentraum_auth"
             - name: DB_USERNAME
               value: "opentraum"
             - name: DB_PASSWORD
-              value: "opentraum"
+              value: "opentraum123!"
+            - name: SPRING_R2DBC_URL
+              value: "r2dbc:mysql://opentraum-mariadb.mariadb:3306/opentraum_auth"
             - name: JAVA_OPTS
               value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
             - name: SPRING_MAIN_LAZY_INITIALIZATION
               value: "true"
           resources:
             requests:
-              memory: "256Mi"
+              memory: "512Mi"
               cpu: "500m"
             limits:
               memory: "512Mi"
-              cpu: "1000m"
+              cpu: "500m"
           startupProbe:
             httpGet:
               path: /actuator/health

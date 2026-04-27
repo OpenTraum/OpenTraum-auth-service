@@ -30,9 +30,9 @@ dependencies {
     // Spring Security (Reactive)
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    // R2DBC - PostgreSQL
+    // R2DBC - MariaDB
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
-    runtimeOnly 'org.postgresql:r2dbc-postgresql'
+    runtimeOnly 'io.asyncer:r2dbc-mysql:1.1.0'
 
     // Redis Reactive
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
