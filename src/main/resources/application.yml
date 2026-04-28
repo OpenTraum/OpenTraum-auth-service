@@ -23,7 +23,8 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET:opentraum-default-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256}
-  expiration: ${JWT_EXPIRATION:1800000}   # 30분 (밀리초)
+  expiration: ${JWT_EXPIRATION:1800000}                    # access token: 30분 (밀리초)
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}  # refresh token: 7일 (밀리초)
 
 springdoc:
   api-docs:

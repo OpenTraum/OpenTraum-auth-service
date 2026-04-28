@@ -2,6 +2,7 @@ package com.opentraum.auth.domain.controller;
 
 import com.opentraum.auth.domain.dto.AuthResponse;
 import com.opentraum.auth.domain.dto.LoginRequest;
+import com.opentraum.auth.domain.dto.RefreshRequest;
 import com.opentraum.auth.domain.dto.SignupRequest;
 import com.opentraum.auth.domain.service.AuthService;
 import jakarta.validation.Valid;
@@ -40,6 +41,16 @@ public class AuthController {
     @PostMapping("/login")
     public Mono<ResponseEntity<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request)
+                .map(ResponseEntity::ok);
+    }
+
+    /**
+     * Refresh Token으로 새 access token 발급
+     * POST /api/v1/auth/refresh
+     */
+    @PostMapping("/refresh")
+    public Mono<ResponseEntity<AuthResponse>> refresh(@Valid @RequestBody RefreshRequest request) {
+        return authService.refresh(request.getRefreshToken())
                 .map(ResponseEntity::ok);
     }
 
