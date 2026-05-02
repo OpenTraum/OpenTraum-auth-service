@@ -76,10 +76,10 @@ spec:
           resources:
             requests:
               memory: "512Mi"
-              cpu: "200m"
+              cpu: "250m"
             limits:
               memory: "512Mi"
-              cpu: "200m"
+              cpu: "250m"
           startupProbe:
             httpGet:
               path: /actuator/health
